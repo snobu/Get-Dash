@@ -1,7 +1,7 @@
 # Author: adrianc@oriflame.net
 
 Clear-Host
-$build = 4
+$build = 5
 Write-Host -BackgroundColor DarkCyan -ForegroundColor Cyan "DC2 VM Dashboard - Build $build", "`n"
 
 $Computers = 'DC2-HYPER1', 'DC2-HYPER2'
@@ -37,7 +37,7 @@ Invoke-Command -ComputerName $Computers -scriptblock {
                     AvgCPU_MHz = $measure.AvgCPU
                     AvgIOPS = $measure.AggregatedAverageNormalizedIOPS
                     Mem_MB = ($vm.MemoryAssigned)/1mb
-                    TotalDiskGB = $measure.TotalDisk/1024
+                    TotalDiskGB = [Math]::Round($measure.TotalDisk/1024)
                     Uptime = $vm.Uptime
                     Host = $vm.ComputerName
                     State = $vm.State
@@ -45,6 +45,6 @@ Invoke-Command -ComputerName $Computers -scriptblock {
                     Heartbeat = $vm.Heartbeat
                 } #psobject
              } #foreach
-} | select VMName, State, ReplState, Mem_MB, AvgCPU_MHz, NowCPU_MHz, AvgIOPS, Uptime, TotalDiskGB, Heartbeat, Host | ft -AutoSize
+} | select VMName, State, Host, ReplState, Mem_MB, AvgCPU_MHz, NowCPU_MHz, AvgIOPS, Uptime, TotalDiskGB, Heartbeat | sort State | ft -AutoSize
 
 Pause
