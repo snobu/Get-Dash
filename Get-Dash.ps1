@@ -1,7 +1,7 @@
 # Author: adrianc@oriflame.net
 
 Clear-Host
-$build = 5
+$build = 6
 Write-Host -BackgroundColor DarkCyan -ForegroundColor Cyan "DC2 VM Dashboard - Build $build", "`n"
 
 $Computers = 'DC2-HYPER1', 'DC2-HYPER2'
@@ -25,7 +25,12 @@ Invoke-Command -ComputerName $Computers -ScriptBlock {
              D_Volume_UsagePercent = 100-[int]$freeD
              Network = $network
         }
-} | Select HyperV_Host, AvgCPUPercent, MemUsagePercent, C_Volume_UsagePercent, D_Volume_UsagePercent, Network | ft -AutoSize
+} | Select HyperV_Host,
+           @{l='AvgCPU(%)';e={$_.AvgCPUPercent}}, 
+           @{l='MemUsage(%)';e={$_.MemUsagePercent}}, 
+           @{l='C_Vol_Usage(%)';e={$_.C_Volume_UsagePercent}},
+           @{l='D_Vol_Usage(%)';e={$_.D_Volume_UsagePercent}},
+           Network | ft -AutoSize
 
 Invoke-Command -ComputerName $Computers -scriptblock {
     Get-VM | Foreach-Object {
@@ -37,7 +42,7 @@ Invoke-Command -ComputerName $Computers -scriptblock {
                     AvgCPU_MHz = $measure.AvgCPU
                     AvgIOPS = $measure.AggregatedAverageNormalizedIOPS
                     Mem_MB = ($vm.MemoryAssigned)/1mb
-                    TotalDiskGB = [Math]::Round($measure.TotalDisk/1024)
+                    TotalDisk_GB = [Math]::Round($measure.TotalDisk/1024)
                     Uptime = $vm.Uptime
                     Host = $vm.ComputerName
                     State = $vm.State
@@ -45,6 +50,6 @@ Invoke-Command -ComputerName $Computers -scriptblock {
                     Heartbeat = $vm.Heartbeat
                 } #psobject
              } #foreach
-} | select VMName, State, Host, ReplState, Mem_MB, AvgCPU_MHz, NowCPU_MHz, AvgIOPS, Uptime, TotalDiskGB, Heartbeat | sort State | ft -AutoSize
+} | select VMName, State, Host, ReplState, Mem_MB, AvgCPU_MHz, NowCPU_MHz, AvgIOPS, Uptime, TotalDisk_GB, Heartbeat | sort State | ft -AutoSize
 
 Pause
