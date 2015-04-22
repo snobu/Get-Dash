@@ -1,5 +1,3 @@
-# Author: adrianc@oriflame.net
-
 Clear-Host
 $build = 6
 Write-Host -BackgroundColor DarkCyan -ForegroundColor Cyan "DC2 VM Dashboard - Build $build", "`n"
